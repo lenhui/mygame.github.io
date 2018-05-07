@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+	<title>斗地主</title>
+	<script type="text/javascript" src="./js/jquery-3.2.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="./css/index.css"/>
+	<script type="text/javascript" src="./js/00.js"></script>
+	<!-- <script type="text/javascript">
+	$(function(){
+		// 1.初始化牌堆
+		for(var i=0;i<54;i++){
+			// $('.all_poker').html('<li class="back"></li>');
+			$('.all_poker').append('<li class="back" style="top:-'+i+'px"></li>');
+		}
+
+		// 定义一个点击次数的值
+		var click = 0;
+
+
+		// 初始化牌堆数据
+
+		/*
+			由于扑克牌每张牌包含两种数据，所我们设计数据结构时需要把一个数据看成两个值，所以我们把数据结果设计成这样
+			方块1 => 1_0   梅花 1 =>  1_1  。。 数据结构  点数_花色
+		*/
+		var all_poker_data = ['14_0','14_1'];
+		for(var i=1;i<14;i++){
+			for(var j=0;j<4;j++){
+				all_poker_data.push(i+'_'+j);
+			}
+		}
+
+		// console.log(all_poker_data);
+
+
+		//初始化玩家数据
+		// 由于玩家数据可能有很多个不同方向的内容，所以我们使用对象数据类型进行保存
+		var play_1 = {name:'阳光男孩',integtal:1000,role:0,poker:[]};
+		//name => 用户昵称 ；integral=>积分； orle => 角色, 0 代表农民,1代表地主； poker=>玩家当前手牌的数据
+		var play_2 = {name:'葬爱家族-☆陈少',integtal:1000,role:0,poker:[]};
+		var play_3 = {name:'往事随风',integtal:1000,role:0,poker:[]};
+		var ready_poker = [];
+
+		// 玩家准备出的牌
+		// 绑定选择事件
+		$('.play_2').on('click','li',function(){
+			// 把现在的数据获取到
+			// alert('你选择了我呀');
+			var top = $(this).css('top');
+			if(top != '-10px'){
+				$(this).css({top:'-10px'});
+				ready_poker.push($(this).attr('data-value'));
+				// console.log(ready_poker);
+			}else{
+				$(this).css({top:'0px'});
+				// 找到牌的数据
+				var index = ready_poker.indexOf($(this).attr('data-value'));
+				// console.log(index);
+				// 删除这条数据
+				ready_poker.splice(index,1);
+				// console.log(ready_poker);
+			}
+		});
+
+
+		// $('.all_poker li').click(function(){
+		$('body').on('click','.all_poker',function(){
+			if(click <=0){
+				clearPoker(); 	//调用洗牌方法
+				click++; 	//增加点击次数
+			}else{
+				deal(0); 	//调用发牌方法
+
+				setTimeout(function(){
+					getBoss();
+				},3500);
+			}
+		});
+
+		// 绑定洗牌动画
+		function clearPoker(){
+		// $('.all_poker').click(function(){
+
+			// 洗牌对电脑来说就是把牌堆数据顺序打乱
+			for(var i=0;i<2;i++){
+				all_poker_data.sort(function(){return 0.5-Math.random();});
+			}
+
+			// console.log(all_poker_data);
+			var all_poker = $('.mid_top').html();
+			// 1.删除原来的牌
+			$('.all_poker').remove();
+
+			for(var i=0;i<3;i++){
+				var $ul = $('<ul />').attr('class','all_poker').css({top:-i*275+'px'});
+
+				for(var j=0;j<18;j++){
+					var $li = $('<li />').attr('class','back').css({top:-j+'px'});
+
+					$ul.append($li);
+				}
+
+				// console.log($ul);
+				$('.mid_top').append($ul);
+			}
+
+			// 洗牌动画
+			for(var i=0;i<3;i++){
+				$('.all_poker').eq(0).animate({left:'-300px'},200).animate({left:'0px'},200)
+				$('.all_poker').eq(1).animate({left:'300px'},200).animate({left:'0px'},200)
+			}
+
+			setTimeout(function(){
+				$('.mid_top').html(all_poker);
+			},1500);
+
+		};
+
+		// 发牌的方法
+		function deal(number){
+			// 发牌给左边的玩家
+			$('.all_poker li:last').animate({left:'-500px',top:'200px'},20);
+
+			setTimeout(function(){
+				$('.all_poker li:last').remove();
+				// 把删除的最后一个数据插入到玩家的数组里面
+				// 把删除后的返回值，当做玩家牌堆的插入值
+				play_1.poker.push(all_poker_data.pop());
+			},30);
+
+			// 发牌给中间的玩家
+			setTimeout(function(){
+				$('.all_poker li:last').animate({top:'500px'},20);
+
+				setTimeout(function(){
+					$('.all_poker li:last').remove();
+
+					// 把牌堆中随后一张数据添加到玩家2的数据中，并删除掉该数据
+					play_2.poker.push(all_poker_data.pop());
+
+					// console.log(play_2.poker);
+					var poker_html = makePoker(play_2.poker[play_2.poker.length-1]);
+
+					$('.play_2').append(poker_html);
+					$('.play_2 li:last').css({left:number*18+'px'});
+					$('.play_2').css({left:-9*number+'px'});
+
+				},30);
+
+			},40);
+
+			// 发牌给右边的玩家
+			setTimeout(function(){
+				$('.all_poker li:last').animate({top:'200px',left:'500px'},20);
+				setTimeout(function(){
+					$('.all_poker li:last').remove();
+
+					play_3.poker.push(all_poker_data.pop());
+					number++;
+					if(number < 17){
+						deal(number);
+					}else{
+						// 进行发牌结束后的流程
+						// 准备一个排序的方法，把乱的数据传进去，返回排好序的数据
+						play_1.poker = sortPoker(play_1.poker);
+						play_2.poker = sortPoker(play_2.poker);
+						play_3.poker = sortPoker(play_3.poker);
+
+						console.log(play_1.poker);
+						// 发牌结束后进行玩家手牌整理动画
+						setTimeout(function(){
+							// 等一秒的时候，把玩家的牌变成背面
+							$('.play_2 li').attr('class','back').css({background:''});
+
+							setTimeout(function(){
+								// 删除当前li
+								$('.play_2 li').remove();
+
+								// 循环里面每个值，传到makepoker
+								for(var i=0;i<play_2.poker.length;i++){
+									var temp_li = makePoker(play_2.poker[i]);
+
+									// 得到返回值，添加到html中
+									$('.play_2').append(temp_li);
+
+									// 调整位置
+									$('.play_2 li:last').css({left:i*18+'px'});
+								}
+							},500);
+						},1000);
+					}
+				},30);
+			},80);
+
+		}
+
+		// 顶一个生成排名的HTML代码的方法
+		function makePoker(poker){
+			var poker_arr = poker.split('_');
+			// console.log(poker_arr);
+
+			var color_arr = [
+				[-17,-5], 		//梅花花色坐标
+				[-162,-5],		//红桃花色坐标
+				[-17,-224],	//方块花色坐标
+				[-162,-224] 	//黑桃花色坐标
+			]
+
+			if(poker_arr[0] !=14){
+				// 牌不是大小王的话，牌面背景的生成方法
+				// 通过花色值与花色的坐标数组确定片面X方向的坐标值
+				var x = color_arr[poker_arr[1]][0];
+				var y = color_arr[poker_arr[1]][1];
+			}else{
+				if(poker_arr[1] == 0){	
+					var x = -162;
+					var y = -5;
+				}else{
+					var x = -17;
+					var y = -5;
+				}
+			}
+
+			return '<li style="width: 125px; height: 175px; background: url(./images/'+poker_arr[0]+'.png) '+x+'px '+y+'px;" data-value="'+poker+'"></li>';
+		}
+
+		// 扑克牌数据整理的方法
+		function sortPoker(poker){
+			// console.log(poker);
+
+			poker = poker.sort(function(x,y){
+				// console.log(x);
+				// console.log(y);
+				var x_arr = x.split('_');
+				var y_arr = y.split('_');
+
+				if(x_arr[0] != y_arr[0]){
+					// 点数不相同，使用点数进行排序
+					return x_arr[0] - y_arr[0];
+				}else{
+					// 点数相同，使用花色排序
+					return x_arr[1] - y_arr[1];
+				}
+			});
+
+			return poker;
+		}
+
+		// 抢地主流程的方法
+		function getBoss(start, cancle){
+
+			// console.log(cancle);
+			cancle = cancle || 1;
+
+			if(cancle >3){
+				alert('一群扑街都不抢，不玩啦');
+				var url = window.location.href;
+				window.location.href = url;
+				return false;
+
+			}
+
+			if(start == undefined){
+				start = Math.round(Math.random()*2);
+			}
+
+			console.log(start);
+
+			// 先把所有玩家叫地主的组件隐藏
+			$('.getBoss').hide();
+
+			// 把开始叫地主的人的页面组件显示
+			$('.getBoss').eq(start).show();
+
+			// 绑定叫地主的按钮方法
+			$('.getBoss').eq(start).find('input').eq(0).click(function(){
+				$('.getBoss').eq(start).hide();
+				// 通过点击的到那个玩家抢到地主的值来判断谁做地主
+				var value = Number($(this).attr('data-value'));
+
+				switch(value){
+					case 1:
+						play_1.role = 1;
+						play_1.poker = play_1.poker.concat(all_poker_data);
+						console.log(play_1);
+					break;
+					case 2:
+						play_2.role = 1;
+						play_2.poker = play_2.poker.concat(all_poker_data);
+						console.log(play_2);
+					break;
+					case 3:
+						play_3.role = 1;
+						play_3.poker = play_3.poker.concat(all_poker_data);
+						console.log(play_3);
+					break;
+				}
+
+			// 把剩下的三张牌放开
+			$('.all_poker li').remove();
+			for(var i=0;i<3;i++){
+				var temp_li = makePoker(all_poker_data[i]);
+				$('.all_poker').append(temp_li);;
+			}
+
+			$('.all_poker li').eq(0).animate({left:'-300px'},200).animate({left:'-300px',top:'-50px'},100);
+			$('.all_poker li').eq(1).animate({left:'300px'},200).animate({left:'300px',top:'-50px'},100);
+			$('.all_poker li').eq(2).animate({left:'-0px'},200).animate({left:'0px',top:'-50px'},100);
+
+			});
+
+			// 绑定不叫地主的按钮方法
+			$('.getBoss').eq(start).find('input').eq(1).click(function(){
+				start = (++start >2)? 0: start;
+
+				getBoss(start,cancle+1);
+
+			});
+
+		}
+	});
+	</script> -->
+</head>
+<body>
+<div class="left">
+	<ul class="play_1"></ul>
+</div>
+<div class="mid">
+	<div class="mid_top">
+	<p class="getBoss">
+		<input type="button" value="叫地主" data-value="1">
+		<input type="button" value="不叫">
+	</p>
+		<ul class="all_poker">
+			<!-- <li class="back"></li> -->
+		</ul>
+	</div>
+	<div class="mid_end">
+	<p class="getBoss">
+		<input type="button" value="叫地主" data-value="2">
+		<input type="button" value="不叫">
+	</p>
+		<ul class="play_2">
+			<!-- <li style="width: 125px; height: 175px; background: url(./images/14.png) -162px -5px;"></li> -->
+		</ul>
+	</div>
+</div>
+<div class="right">
+	<p class="getBoss">
+		<input type="button" value="叫地主" data-value="3">
+		<input type="button" value="不叫">
+	</p>
+	<ul class="play_3"></ul>
+</div>
+<div style="position: fixed; left: 360px; bottom:2px; width:100px; height: 115px; background: url('./images/1.png') -169px -17px; display: none;" class="player_avatar"></div>
+
+<div style="position: fixed; left: 220px; top:5px; width:100px; height: 115px; background: url('./images/1.png') -178px -247px; display: none;" class="player_avatar"></div>
+
+<div style="position: fixed; right: 220px; top:5px; width:100px; height: 115px; background: url('./images/1.png') -30px -33px; display: none;" class="player_avatar"></div>
+<audio src="./周润发-赌神出场必听音乐.mp3" autoplay="autoplay" loop="loop"></audio>
+</body>
+</html>

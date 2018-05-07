@@ -1,0 +1,83 @@
+*{
+	margin: 0px;
+	padding: 0px;
+}
+body{
+	background-image: url('../images/16.jpg');
+	/*background-image: url('../images/bg.jpg');*/
+	/*background-image: url('../images/bg2.jpg');*/
+	background-color: #000;
+	background-repeat: no-repeat;
+	background-size: cover;
+	overflow: hidden;
+}
+li{
+	list-style: none;
+}
+.left{
+	width:20%;
+	height: 800px;
+	float: left;
+	/*background: red;*/
+}
+.mid{
+	width:60%;
+	height: 800px;
+	float: left;
+	/*background: blue;*/
+}
+.mid_top{
+	width: 100%;
+	height: 500px;
+	float: left;
+	/*background: #000;*/
+}
+.mid_end{
+	width: 100%;
+	height: 300px;
+	float: left;
+	/*background: #fff;*/
+}
+.right{
+	width:20%;
+	height: 800px;
+	float: right;
+	/*background: yellow;*/
+}
+
+.all_poker{
+	width: 125px;
+	height: 175px;
+	margin: 100px auto 0px;
+	position: relative;
+	/*background: #fff;*/
+}
+.all_poker li{
+	position: absolute;
+}
+.temp_poker{
+	width: 125px;
+	height: 175px;
+	margin: 100px auto 0px;
+	position: relative;
+}
+.back {
+	width:125px;
+	height: 175px;
+	background: url('../images/14.png') -87px -225px;
+	position: absolute;
+	z-index: 100;
+}
+.play_1, .play_2, .play_3{
+	width:125px;
+	height: 175px;
+	margin: 20px auto 0px;
+	position: relative;
+}
+.play_1 li,.play_2 li,.play_3 li{
+	position: absolute;
+}
+
+.getBoss{
+	display: none;
+}
